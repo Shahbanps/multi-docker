@@ -1,3 +1,4 @@
+language: generic
 sudo: required
 services:
   - docker
@@ -5,8 +6,8 @@ services:
 before_install:
   - docker build -t shahban/react-test -f ./client/Dockerfile.dev
 
-scripts:
-  - docker run shahban/react-test npm test -- --coverag
+script:
+  - docker run -e CI=true USERNAME/react-test npm test
 
 
 after_sucess:
@@ -14,3 +15,12 @@ after_sucess:
   - docker build -t shahban/multi-client ./nginx
   - docker build -t shahban/multi-client ./server
   - docker build -t shahban/multi-client ./worker
+  
+  #Log in to the docker CLI
+  - echo "DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+  #Take those images and push them to dockerhub
+  - docker push shahban/multi-client
+  - docker push shahban/multi-nginx
+  - docker push shahban/multi-server
+  - docker push shahban/multi-worker
