@@ -1,0 +1,16 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t shahban/react-test -f ./client/Dockerfile.dev
+
+scripts:
+  - docker run shahban/react-test npm test -- --coverag
+
+
+after_sucess:
+  - docker build -t shahban/multi-client ./client
+  - docker build -t shahban/multi-client ./nginx
+  - docker build -t shahban/multi-client ./server
+  - docker build -t shahban/multi-client ./worker
